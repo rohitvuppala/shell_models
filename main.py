@@ -180,8 +180,8 @@ t0    = 0.0
 # ODE solver parameters
 #abserr = 1.0e-8
 #relerr = 1.0e-6
-tend      = 100.0
-numpoints = 1001
+tend      = 300.0
+numpoints = 3001
 dt        = (tend-t0) / (numpoints - 1)
 
 # Pack up the parameters:
@@ -208,17 +208,40 @@ with open(r"data.dat","a") as out_file:
             print('{:.2f}'.format(r.t),end=" ",file=out_file)
             print('{:.2f}'.format(r.t))
             for i in r.y:
-                print('{:.2f}'.format(i),end=" ",file=out_file)
-            print('\n',file=out_file)
+                print('{:.2E}'.format(i),end=" ",file=out_file)
+            print('\n',end="",file=out_file)
             npaa.append(np.append(r.t,r.y))
     #f.write("\n")
     
 #f.close()   
 
 #%%r
-data = np.load("data.npz", mmap_mode="r")
+#
+#Everything written the file as continuous array so need to unwrap them as needed
+#
 
-print(data)
+data   = np.load("data.npz", mmap_mode="r")
 
+tarray = data[0::n+1]
+nview  = 3000
+darray = np.zeros((nview,n),dtype=np.complex128)
+for i in range(n):
+    darray[:,i] = data[i+1:nview*(n+1):n+1]
+    
+for i in range(n):
+    plt.xlabel("Time")
+    plt.ylabel("Real part")
+    plt.plot(tarray[:nview],np.real(darray[:nview,i]),label="mode:"+str(i+1))
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
+          ncol=6, fancybox=True, shadow=True)
+plt.savefig("real.png",dpi=300)
 
+plt.figure()
+for i in range(n):
+    plt.xlabel("Time")
+    plt.ylabel("Img part")
+    plt.plot(tarray[:nview],np.imag(darray[:nview,i]),label="mode:"+str(i+1))
+plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
+          ncol=6, fancybox=True, shadow=True)
+plt.savefig("imag.png",dpi=300)
 
