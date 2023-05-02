@@ -234,7 +234,7 @@ for i in range(n):
     plt.plot(tarray[:nview],np.real(darray[:nview,i]),label="mode:"+str(i+1))
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
           ncol=6, fancybox=True, shadow=True)
-plt.savefig("real.png",dpi=300)
+plt.savefig("real.png",dpi=300,bbox_inches='tight')
 
 plt.figure()
 for i in range(n):
@@ -243,5 +243,5 @@ for i in range(n):
     plt.plot(tarray[:nview],np.imag(darray[:nview,i]),label="mode:"+str(i+1))
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
           ncol=6, fancybox=True, shadow=True)
-plt.savefig("imag.png",dpi=300)
+plt.savefig("imag.png",dpi=300,bbox_inches='tight')
 
