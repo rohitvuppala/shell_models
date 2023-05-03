@@ -263,12 +263,12 @@ fig = plt.figure()
 ax = plt.gca()
 ax.set_yscale('log')
 ax.set_xscale('log')
-ax.scatter(k,E)
-ax.plot(k,E_comp)
-ax.set_xlabel("k")
-ax.set_ylabel("E(k)")
-
-
+ax.scatter(k,E,color='green',label='Energy spectrum N=22')
+ax.plot(k,E_comp,color='k',linestyle='--', label='Line with slope -5/3')
+ax.set_xlabel("k",fontsize=24)
+ax.set_ylabel("E(k)",fontsize=24)
+ax.legend(fontsize=24)
+plt.savefig("Energy-spectrum-plot.png",dpi=300)
 
 
 
