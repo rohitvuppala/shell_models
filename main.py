@@ -116,13 +116,13 @@ def vectorfield(t, u, *p):
             c3= (eps-1)*k(sn-2)
         
         if i == 0:
-            g = np.conjugate(c1*u[i+1]*u[i+2] + c2*u[n-1]*u[i+1] + c3*u[n-1]*u[n-2])*1j
+            g = np.conjugate(c1*u[i+1]*u[i+2])*1j
         elif i == 1:
-            g = np.conjugate(c1*u[i+1]*u[i+2] + c2*u[i-1]*u[i+1] + c3*u[i-1]*u[n-1])*1j
+            g = np.conjugate(c1*u[i+1]*u[i+2] + c2*u[i-1]*u[i+1])*1j
         elif i == n-2:
-            g = np.conjugate(c1*u[i+1]*u[0] + c2*u[i-1]*u[i+1] + c3*u[i-1]*u[i-2])*1j
+            g = np.conjugate(c2*u[i-1]*u[i+1] + c3*u[i-1]*u[i-2])*1j
         elif i == n-1:
-            g = np.conjugate(c1*u[0]*u[1] + c2*u[i-1]*u[0] + c3*u[i-1]*u[i-2])*1j
+            g = np.conjugate(c3*u[i-1]*u[i-2])*1j
         else:
             g = np.conjugate(c1*u[i+1]*u[i+2] + c2*u[i-1]*u[i+1] + c3*u[i-1]*u[i-2])*1j
         
@@ -172,15 +172,15 @@ for i in range(n):
 #########################################################################################
 # Note : the values are stored from index starting 0, however shell number starts at 1
 #########################################################################################
-u0[4] = 1e-5*(1 + 1j)
-u0[6] = 1e-5*(1 + 1j) 
+u0[2] = 1e-5*(1 + 1j)
+u0[4] = 1e-5*(1 + 1j) 
 #init time
 t0    = 0.0
 
 # ODE solver parameters
 #abserr = 1.0e-8
 #relerr = 1.0e-6
-tend      = 300.0
+tend      = 1200.0
 numpoints = 3001
 dt        = (tend-t0) / (numpoints - 1)
 
@@ -223,7 +223,7 @@ with open(r"data.dat","a") as out_file:
 data   = np.load("data.npz", mmap_mode="r")
 
 tarray = data[0::n+1]
-nview  = 3000
+nview  = numpoints-1
 darray = np.zeros((nview,n),dtype=np.complex128)
 for i in range(n):
     darray[:,i] = data[i+1:nview*(n+1):n+1]
@@ -244,4 +244,31 @@ for i in range(n):
 plt.legend(loc='upper center', bbox_to_anchor=(0.5, 1.3),
           ncol=6, fancybox=True, shadow=True)
 plt.savefig("imag.png",dpi=300,bbox_inches='tight')
+
+#%%
+#
+# Compute Energy E_i = 1/2 |U_i|^2/k_i^2 
+#
+
+#Take the solution from the last timestep 
+E      = np.zeros(n,dtype=np.double)
+k      = np.zeros(n,dtype=np.double)
+E_comp = np.zeros(n,dtype=np.double)
+for i in range(n):
+    E[i]  = 0.5* np.absolute(r.y[i])**2/(k0*(lmbda**(i+1)))**2         #Since shell number starts from 1 but storage index starts from 0
+    k[i]  = np.real(k0)*(np.real(lmbda)**(i+1))
+    E_comp[i]= ((np.real(k0)*(np.real(lmbda)**(i+1)))**2)**(-5/3)
+
+fig = plt.figure()
+ax = plt.gca()
+ax.set_yscale('log')
+ax.set_xscale('log')
+ax.scatter(k,E)
+ax.plot(k,E_comp)
+ax.set_xlabel("k")
+ax.set_ylabel("E(k)")
+
+
+
+
 
